@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="ministry_title">FitBharat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7fafc;
+            color: #1a202c;
+        }
+        :root {
+            --primary-color: #0d47a1; /* Deep Navy Blue */
+            --accent-saffron: #f97316; /* Saffron */
+            --accent-green: #16a34a; /* Green */
+        }
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            background-color: #0b3a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .btn-primary:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #1e293b;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
+        .form-input {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background-color: #f8fafc;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.2);
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            height: 14px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background-color: var(--accent-green);
+            height: 100%;
+            transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            border-radius: 9999px;
+        }
+        #chat-messages {
+            height: 300px;
+            overflow-y: auto;
+        }
+        .hidden { display: none; }
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(10, 25, 47, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: center; align-items: center; z-index: 50;
+            opacity: 0; animation: fadeIn 0.3s forwards;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .tab-button {
+            padding: 8px 16px; cursor: pointer; border-bottom: 3px solid transparent;
+            transition: all 0.3s ease; color: #4a5568;
+        }
+        .tab-button.active {
+            color: var(--primary-color); border-bottom-color: var(--primary-color);
+            font-weight: 600;
+        }
+        .sport-card { border: 2px solid transparent; cursor: pointer; }
+        .sport-card.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(13, 71, 161, 0.2);
+            transform: scale(1.05);
+        }
+        .notification {
+            position: fixed; top: 20px; right: 20px; padding: 1rem 1.5rem;
+            border-radius: 8px; color: white; z-index: 100;
+            opacity: 0; transform: translateY(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .notification.show { opacity: 1; transform: translateY(0); }
+        .notification.success { background-color: var(--accent-green); }
+        .notification.error { background-color: #dc2626; }
+        .water-glass { transition: color 0.4s ease; cursor: pointer; }
+        .water-glass.filled {
+             background: linear-gradient(to top, #3b82f6 50%, #bfdbfe 50%);
+            -webkit-background-clip: text;
+            background-clip: text;
+             -webkit-text-fill-color: transparent;
+             color: #3b82f6;
+        }
+        .bmi-gauge {
+            width: 250px; height: 125px;
+            position: relative; overflow: hidden;
+            border-radius: 125px 125px 0 0;
+            background-color: #e2e8f0;
+            margin: 1rem auto;
+        }
+        .bmi-gauge-fill {
+            position: absolute; top: 100%; left: 0;
+            width: 100%; height: 100%;
+            background: conic-gradient(from -90deg at 50% 100%, #f97316, #facc15, #4ade80, #22d3ee, #f97316);
+            transform-origin: center top;
+            transition: transform 0.5s ease-out;
+        }
+        .bmi-gauge-cover {
+            width: 200px; height: 100px;
+            background: #fff; border-radius: 100px 100px 0 0;
+            position: absolute; top: 25px; left: 25px;
+        }
+        .bmi-gauge-pointer {
+            position: absolute; top: 0; left: 50%;
+            height: 125px; width: 2px;
+            background: #334155; transform-origin: bottom center;
+            transition: transform 0.5s ease-out;
+            transform: translateX(-50%) rotate(0deg);
+        }
+        .workout-item .play-btn {
+            background-color: var(--primary-color); color: white;
+            border: none; border-radius: 50%; width: 40px; height: 40px;
+            display: inline-flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .workout-item .play-btn:hover { background-color: #0b3a8a; }
+        .workout-item .play-btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
+        .timer-display { font-weight: 600; color: var(--primary-color); }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="notification-area"></div>
+
+    <div id="welcome-overlay" class="overlay">
+        <div class="card p-8 max-w-lg w-full text-center mx-4">
+             <div id="welcome-step-1">
+                 <img src="image_2x.jpeg" alt="Emblem of India" class="w-20 h-auto mx-auto mb-4">
+                 <h1 class="text-2xl font-bold mb-2" data-translate-key="ministry_title_modal">FitBharat</h1>
+                 <p class="text-gray-600 mb-6" data-translate-key="select_language">Select Your Language</p>
+                 <div class="flex flex-wrap justify-center gap-3">
+                      <button onclick="setLanguage('en')" class="btn-secondary">English</button>
+                      <button onclick="setLanguage('hi')" class="btn-secondary">हिंदी</button>
+                 </div>
+             </div>
+             <div id="welcome-step-2" class="hidden">
+                 <h2 class="text-2xl font-bold mb-2" data-translate-key="gender_selection_title">Select Your Gender</h2>
+                 <p class="text-gray-600 mb-6" data-translate-key="gender_selection_subtitle">This helps us personalize your experience.</p>
+                 <div class="flex justify-center gap-4">
+                     <button onclick="selectGender('male')" class="btn-secondary w-32 h-32 flex flex-col items-center justify-center text-lg"><i class="fas fa-mars text-4xl mb-2"></i><span data-translate-key="male">Male</span></button>
+                     <button onclick="selectGender('female')" class="btn-secondary w-32 h-32 flex flex-col items-center justify-center text-lg"><i class="fas fa-venus text-4xl mb-2"></i><span data-translate-key="female">Female</span></button>
+                 </div>
+             </div>
+        </div>
+    </div>
+
+    <div id="login-overlay" class="overlay hidden">
+        <div class="card p-8 max-w-lg w-full text-center mx-4 relative">
+             <button onclick="document.getElementById('login-overlay').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+             <h2 class="text-2xl font-bold mb-2" data-translate-key="login_title">Login to Your Account</h2>
+             <p class="text-gray-600 mb-6" data-translate-key="login_subtitle">Enter your email to receive an OTP.</p>
+             <div class="space-y-4 text-left">
+                   <div>
+                       <label for="email-input-modal" class="font-medium text-gray-700" data-translate-key="email_label">Email Address</label>
+                       <input type="email" id="email-input-modal" class="form-input mt-1" placeholder="you@example.com">
+                   </div>
+                   <div id="otp-field-modal" class="hidden">
+                       <label for="otp-input-modal" class="font-medium text-gray-700" data-translate-key="otp_label">Enter OTP</label>
+                       <input type="text" id="otp-input-modal" class="form-input mt-1" placeholder="123456">
+                   </div>
+             </div>
+             <button id="send-otp-btn-modal" class="btn-primary w-full mt-6" data-translate-key="send_otp_btn">Send OTP</button>
+             <button id="verify-otp-btn-modal" class="btn-primary w-full mt-6 hidden" data-translate-key="verify_otp_btn">Verify & Continue</button>
+        </div>
+    </div>
+
+    <div class="min-h-screen">
+        <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <img src="image_2x.jpeg" alt="Emblem of India" class="h-12">
+                     <div>
+                         <h1 class="text-lg md:text-xl font-bold text-gray-800" data-translate-key="ministry_title">FitBharat</h1>
+                         <p class="text-sm text-gray-500">Government of India</p>
+                     </div>
+                </div>
+                <div class="flex items-center">
+					<div id="streak-maintainer" title="Your daily streak!"
+						 class="flex items-center space-x-2 mr-4 text-gray-700 cursor-pointer">
+						<i class="fas fa-fire text-xl text-orange-500"></i>
+						<span class="font-bold text-lg" id="streak-count">0</span>
+					</div>
+
+					<div id="karma-indicator" title="Your Karma Points"
+						 class="flex items-center space-x-2 mr-4 text-gray-700 cursor-pointer">
+						<span class="text-xl">☯</span>
+						<span class="font-bold text-lg" id="karma-count">0</span>
+					</div>
+
+					<select id="language-select" class="form-input bg-gray-50 text-sm py-2">
+						<option value="en">English</option>
+						<option value="hi">हिंदी</option>
+					</select>
+					<button id="login-register-btn" class="btn-secondary ml-4" data-translate-key="login_register">
+						Login / Register
+					</button>
+				</div>
+            </div>
+        </header>
+
+        <main id="dashboard-content">
+            
+            <div class="container mx-auto px-4 md:px-8 pt-12 text-center">
+                <h2 class="text-4xl font-extrabold text-gray-800 mb-2" data-translate-key="welcome_title">Welcome to the National Fitness Portal</h2>
+                <p class="text-lg text-gray-600" data-translate-key="welcome_subtitle">Choose your fitness journey from the options below.</p>
+            </div>
+
+            <div class="container mx-auto p-4 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="card text-center p-8 cursor-pointer" onclick="selectMode('athlete')">
+                        <div class="bg-blue-100 text-blue-600 rounded-full w-24 h-24 mx-auto flex items-center justify-center mb-4">
+                            <i class="fas fa-running text-5xl"></i>
+                        </div>
+                        <h3 class="font-bold text-2xl mb-2" data-translate-key="athlete_mode_title">Athlete Mode</h3>
+                        <p class="text-gray-500 text-base" data-translate-key="athlete_mode_desc">Advanced training plans, performance tracking, and sport-specific drills for competitive athletes.</p>
+                    </div>
+
+                    <div class="card text-center p-8 cursor-pointer" onclick="selectMode('weight-loss')">
+                        <div class="bg-green-100 text-green-600 rounded-full w-24 h-24 mx-auto flex items-center justify-center mb-4">
+                            <i class="fas fa-weight-scale text-5xl"></i>
+                        </div>
+                        <h3 class="font-bold text-2xl mb-2" data-translate-key="weight_loss_mode_title">Weight Loss Mode</h3>
+                        <p class="text-gray-500 text-base" data-translate-key="weight_loss_mode_desc">Achieve your weight loss goals with guided exercises, BMI tracking, and personalized plans based on your profile.</p>
+                    </div>
+
+                    <div class="card text-center p-8 cursor-pointer" onclick="selectMode('yoga')">
+                        <div class="bg-orange-100 text-orange-600 rounded-full w-24 h-24 mx-auto flex items-center justify-center mb-4">
+                            <i class="fas fa-om text-5xl"></i>
+                        </div>
+                        <h3 class="font-bold text-2xl mb-2" data-translate-key="yoga_mode_title">Yoga Mode</h3>
+                        <p class="text-gray-500 text-base" data-translate-key="yoga_mode_desc">Find your balance with personalized asana sessions for all levels, focusing on mindfulness and flexibility.</p>
+                    </div>
+
+                    <div class="card text-center p-8 cursor-pointer" onclick="selectMode('gym-tracker')">
+                        <div class="bg-indigo-100 text-indigo-600 rounded-full w-24 h-24 mx-auto flex items-center justify-center mb-4">
+                            <i class="fas fa-dumbbell text-5xl"></i>
+                        </div>
+                        <h3 class="font-bold text-2xl mb-2" data-translate-key="gym_tracker_mode_title">Gym Tracker</h3>
+                        <p class="text-gray-500 text-base" data-translate-key="gym_tracker_mode_desc">Locate and explore government-approved sports complexes and gyms in your city to start your training.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 md:px-8 text-center">
+                <div class="card p-6 max-w-3xl mx-auto">
+					<h3 class="text-2xl font-bold mb-4 flex items-center">
+						<i class="fas fa-people-group mr-3 text-orange-500"></i>
+						<span>Hyper-Local Community Challenges</span>
+					</h3>
+					<p class="text-gray-500 mb-4">
+						Take part in local challenges with your community. Completing them will earn you <b>Karma Points</b> 🎉
+					</p>
+					<ul id="challenges-list" class="space-y-4 text-left"></ul>
+				</div>
+            </div>
+
+        </main>
+        
+        <div id="athlete-mode" class="hidden">
+            <div id="sport-selection-screen" class="container mx-auto p-4 md:p-8">
+                 <button class="btn-secondary mb-8" onclick="showModeSelection()"><i class="fas fa-arrow-left mr-2"></i><span data-translate-key="back_to_selection">Back to Dashboard</span></button>
+                 <div class="text-center mb-10">
+                     <h2 class="text-3xl font-bold text-gray-800" data-translate-key="select_sport_title">Select Your Sport</h2>
+                 </div>
+                 <div id="sports-container" class="space-y-8"></div>
+            </div>
+            <div id="athlete-profile-screen" class="hidden container mx-auto p-4 md:p-8 max-w-lg">
+                 <button class="btn-secondary mb-6" onclick="showScreen('sport-selection-screen', 'athlete-profile-screen')"><i class="fas fa-arrow-left mr-2"></i><span data-translate-key="back_to_selection">Back to Sport Selection</span></button>
+                 <div class="card p-8">
+                     <h2 class="text-2xl font-bold mb-6 text-center" data-translate-key="athlete_profile_title">Your Athlete Profile</h2>
+                     <div class="space-y-4">
+                         <div>
+                             <label for="athlete-height" class="font-medium text-gray-700" data-translate-key="height_label">Height (cm)</label>
+                             <input type="number" id="athlete-height" class="form-input mt-1" placeholder="e.g., 175">
+                         </div>
+                         <div>
+                             <label for="athlete-weight" class="font-medium text-gray-700" data-translate-key="weight_label">Weight (kg)</label>
+                             <input type="number" id="athlete-weight" class="form-input mt-1" placeholder="e.g., 70">
+                         </div>
+                     </div>
+                     <button id="generate-athlete-plan-btn" class="btn-primary w-full mt-6" data-translate-key="generate_athlete_plan_btn">Generate My Training Plan</button>
+                 </div>
+            </div>
+            <div id="athlete-plan" class="hidden container mx-auto p-4 md:p-8">
+                 <div class="flex justify-between items-center mb-6">
+                     <button class="btn-secondary" onclick="showScreen('athlete-profile-screen', 'athlete-plan')"><i class="fas fa-arrow-left mr-2"></i><span>Back to Profile</span></button>
+                     <button class="btn-primary" onclick="showScreen('athlete-leaderboard', 'athlete-plan')"><i class="fas fa-trophy mr-2"></i><span data-translate-key="leaderboard">Leaderboard</span></button>
+                 </div>
+                 <div class="text-center mb-8">
+                     <h2 id="athlete-plan-title" class="text-3xl font-bold text-gray-800">Your Training Plan</h2>
+                     <p class="text-gray-600" data-translate-key="athlete_plan_subtitle">Your personalized daily training regimen.</p>
+                 </div>
+                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                       <div class="lg:col-span-1 space-y-8">
+                           <div class="card p-6">
+                               <h3 class="text-xl font-bold mb-4 flex items-center"><i class="fas fa-bullseye mr-3 text-orange-500"></i><span data-translate-key="drills_title">Sport-Specific Drills</span></h3>
+                               <ul id="drills-list" class="space-y-3 text-gray-700"></ul>
+                           </div>
+                           <div class="card p-6">
+                               <h3 class="text-xl font-bold mb-4 flex items-center"><i class="fas fa-dumbbell mr-3 text-blue-500"></i><span data-translate-key="strength_title">Strength & Conditioning</span></h3>
+                               <ul id="strength-list" class="space-y-3 text-gray-700"></ul>
+                           </div>
+                       </div>
+                       <div class="lg:col-span-2 space-y-8">
+							<div class="card p-6">
+								<h3 class="text-xl font-bold mb-4 flex items-center">
+									<i class="fas fa-people-group mr-3 text-orange-500"></i>
+									<span>Hyper-Local Community Challenges</span>
+								</h3>
+								<p class="text-gray-500 mb-4">
+									Join your community and take part in challenges. Completing them will earn you <b>Karma Points</b> 🎉
+								</p>
+								<ul id="challenges-list" class="space-y-4 text-left"></ul>
+							</div>
+                           <div class="card p-6">
+                               <h3 class="text-xl font-bold mb-4" data-translate-key="water_title">Water Intake Tracker</h3>
+                               <p class="text-gray-500 mb-4" data-translate-key="water_subtitle">Aim for 12-16 glasses a day.</p>
+                               <div class="flex items-center justify-between mb-4">
+                                   <span class="text-3xl font-bold text-blue-600"><span id="water-count">0</span> / 16</span>
+                                   <div class="space-x-2">
+                                       <button id="decrease-water" class="bg-gray-200 rounded-full w-10 h-10 font-bold text-xl transition-transform hover:scale-110">-</button>
+                                       <button id="increase-water" class="bg-blue-500 text-white rounded-full w-10 h-10 font-bold text-xl transition-transform hover:scale-110">+</button>
+                                   </div>
+                               </div>
+                               <div id="water-tracker-visual" class="grid grid-cols-8 gap-3"></div>
+                           </div>
+                       </div>
+                 </div>
+            </div>
+            <div id="athlete-leaderboard" class="hidden container mx-auto p-4 md:p-8 max-w-2xl">
+                 <button class="btn-secondary mb-6" onclick="showScreen('athlete-plan', 'athlete-leaderboard')"><i class="fas fa-arrow-left mr-2"></i><span data-translate-key="back_to_plan">Back to Plan</span></button>
+                 <div class="card p-8">
+                     <h2 class="text-2xl font-bold mb-6 text-center" data-translate-key="athlete_leaderboard_title">Athlete Leaderboard</h2>
+                     <ul id="athlete-leaderboard-list" class="space-y-3"></ul>
+                 </div>
+            </div>
+        </div>
+
+        <div id="weight-loss-mode" class="hidden">
+            <div id="weight-loss-profile-screen" class="container mx-auto p-4 md:p-8 max-w-2xl">
+                 <button class="btn-secondary mb-6" onclick="showModeSelection()"><i class="fas fa-arrow-left mr-2"></i><span data-translate-key="back_to_selection">Back to Dashboard</span></button>
+                 <div class="card p-8">
+                     <h2 class="text-2xl font-bold mb-6 text-center" data-translate-key="profile_title">Your Fitness Profile</h2>
+                     <div class="grid md:grid-cols-2 gap-6 items-center">
+                         <div class="space-y-4">
+                             <div>
+                                 <label for="height" class="font-medium text-gray-700" data-translate-key="height_label">Height (cm)</label>
+                                 <input type="number" id="height" class="form-input mt-1" placeholder="e.g., 175">
+                             </div>
+                             <div>
+                                 <label for="weight" class="font-medium text-gray-700" data-translate-key="weight_label">Weight (kg)</label>
+                                 <input type="number" id="weight" class="form-input mt-1" placeholder="e.g., 70">
+                             </div>
+                             <div>
+                                 <label for="time" class="font-medium text-gray-700" data-translate-key="time_label">Time Available (minutes)</label>
+                                 <input type="number" id="time" class="form-input mt-1" placeholder="e.g., 30">
+                             </div>
+                         </div>
+                         <div class="text-center">
+                             <h4 class="font-semibold text-lg">Your BMI</h4>
+                             <div class="bmi-gauge">
+                                 <div class="bmi-gauge-fill"></div>
+                                 <div class="bmi-gauge-pointer"></div>
+                                 <div class="bmi-gauge-cover"></div>
+                             </div>
+                             <p class="text-3xl font-bold" id="bmi-value">--.-</p>
+                             <p class="font-medium" id="bmi-category">Enter details to see</p>
+                         </div>
+                     </div>
+                     <button id="generate-workout-btn" class="btn-primary w-full mt-8" data-translate-key="generate_workout_btn">Generate My Workout</button>
+                 </div>
+            </div>
+            <div id="workout-plan" class="hidden container mx-auto p-4 md:p-8 max-w-3xl">
+                 <div class="flex justify-between items-center mb-6">
+                     <button class="btn-secondary" onclick="showScreen('weight-loss-profile-screen', 'workout-plan')"><i class="fas fa-arrow-left mr-2"></i><span>Back to Profile</span></button>
+                     <button class="btn-primary" onclick="showScreen('weightloss-leaderboard', 'workout-plan')"><i class="fas fa-trophy mr-2"></i><span data-translate-key="leaderboard">Leaderboard</span></button>
+                 </div>
+                 <div class="card p-8">
+                     <h2 class="text-2xl font-bold mb-2" data-translate-key="workout_plan_title">Your Personal Workout Plan</h2>
+                     <p class="text-gray-500 mb-6" data-translate-key="workout_plan_subtitle">Complete the exercises one by one.</p>
+                     <div class="mb-6">
+                         <div class="progress-bar-container">
+                             <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
+                         </div>
+                     </div>
+                     <ul id="workout-list" class="space-y-3"></ul>
+                 </div>
+            </div>
+             <div id="weightloss-leaderboard" class="hidden container mx-auto p-4 md:p-8 max-w-2xl">
+                 <button class="btn-secondary mb-6" onclick="showScreen('workout-plan', 'weightloss-leaderboard')"><i class="fas fa-arrow-left mr-2"></i><span data-translate-key="back_to_plan">Back to Plan</span></button>
+                 <div class="card p-8">
+                     <h2 class="text-2xl font-bold mb-6 text-center" data-translate-key="weightloss_leaderboard_title">Weight Loss Leaderboard</h2>
+                     <ul id="weightloss-leaderboard-list" class="space-y-3"></ul>
+                 </div>
+             </div>
+            <div id="completion-screen" class="hidden container mx-auto p-4 md:p-8 max-w-lg text-center">
+                 <div class="card p-8">
+                     <i class="fas fa-check-circle text-7xl text-green-500 mb-4"></i>
+                     <h2 class="text-3xl font-bold mb-2" data-translate-key="completion_title">Congratulations!</h2>
+                     <p class="text-gray-600 mb-6" data-translate-key="completion_desc">Workout complete! You're on your way to a fitter you. Come back tomorrow for your next session.</p>
+                     <button class="btn-primary" onclick="showModeSelection()" data-translate-key="keep_going">Back to Home</button>
+                 </div>
+            </div>
+        </div>
+
+        <div id="yoga-mode" class="hidden">
+             <div id="yoga-hub-screen" class="container mx-auto p-4 md:p-8">
+                 <button class="btn-secondary mb-8" onclick="showModeSelection()"><i class="fas fa-arrow-left mr-2"></i><span data-translate-key="back_to_selection">Back to Dashboard</span></button>
+                 <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                       <div class="card p-6 text-center cursor-pointer" onclick="showScreen('yoga-profile-screen', 'yoga-hub-screen')">
+                           <div class="bg-orange-100 text-orange-600 rounded-full w-20 h-20 mx-auto flex items-center justify-center mb-4"><i class="fas fa-om text-4xl"></i></div>
+                           <h3 class="text-xl font-bold mb-2" data-translate-key="start_session">Start a Session</h3>
+                           <p class="text-gray-500" data-translate-key="start_session_desc">Begin your personalized yoga practice.</p>
+                       </div>
+                       <div class="card p-6 text-center cursor-pointer" onclick="showScreen('yoga-ai-posture-screen', 'yoga-hub-screen')">
+                           <div class="bg-indigo-100 text-indigo-600 rounded-full w-20 h-20 mx-auto flex items-center justify-center mb-4"><i class="fas fa-robot text-4xl"></i></div>
+                           <h3 class="text-xl font-bold mb-2" data-translate-key="ai_posture_check">AI Posture Check</h3>
+                           <p class="text-gray-500" data-translate-key="ai_posture_check_desc">Get feedback on your yoga form.</p>
+                       </div>
+                 </div>
+                 <div class="mt-12 text-center border-t pt-8 max-w-4xl mx-auto">
+                     <h3 class="text-xl font-bold mb-2" data-translate-key="connect_expert_title">Need Personal Guidance?</h3>
+                     <p class="text-gray-600 mb-6" data-translate-key="connect_expert_desc">Book a one-on-one session with a certified professional.</p>
+                     <button id="connect-expert-btn" class="btn-primary"><i class="fas fa-video mr-2"></i><span data-translate-key="connect_expert_btn">Connect with an Expert</span></button>
+                 </div>
+             </div>
+            <div id="yoga-profile-screen" class="hidden container mx-auto p-4 md:p-8 max-w-lg">
+                 <button class="btn-secondary mb-6" onclick="showScreen('yoga-hub-screen', 'yoga-profile-screen')"><i class="fas fa-arrow-left mr-2"></i><span data-translate-key="back_to_hub">Back to Yoga Hub</span></button>
+                 <div class="card p-8">
+                       <h2 class="text-2xl font-bold mb-6 text-center" data-translate-key="yoga_profile_title">Your Yoga Profile</h2>
+                       <div class="space-y-4">
+                           <div>
+                               <label for="experience" class="font-medium text-gray-700" data-translate-key="experience_label">Experience Level</label>
+                               <select id="experience" class="form-input mt-1">
+                                   <option value="beginner" data-translate-key="beginner">Beginner</option>
+                                   <option value="intermediate" data-translate-key="intermediate">Intermediate</option>
+                                   <option value="advanced" data-translate-key="advanced">Advanced</option>
+                               </select>
+                           </div>
+                           <div>
+                               <label for="yoga-time" class="font-medium text-gray-700" data-translate-key="time_label">Time Available (minutes)</label>
+                               <input type="number" id="yoga-time" class="form-input mt-1" placeholder="e.g., 20">
+                           </div>
+                       </div>
+                       <button id="generate-yoga-btn" class="btn-primary w-full mt-6" data-translate-key="generate_yoga_btn">Generate My Yoga Session</button>
+                 </div>
+            </div>
+            <div id="yoga-plan" class="hidden container mx-auto p-4 md:p-8 max-w-3xl">
+                 <div class="flex justify-between items-center mb-6">
+                     <button class="btn-secondary" onclick="showScreen('yoga-profile-screen', 'yoga-plan')"><i class="fas fa-arrow-left mr-2"></i><span>Back to Profile</span></button>
+                     <button class="btn-primary" onclick="showScreen('yoga-leaderboard', 'yoga-plan')"><i class="fas fa-trophy mr-2"></i><span data-translate-key="leaderboard">Leaderboard</span></button>
+                 </div>
+                 <div class="card p-8">
+                     <h2 class="text-2xl font-bold mb-6" data-translate-key="yoga_plan_title">Your Personal Yoga Session</h2>
+                     <div class="mb-6">
+                         <div class="progress-bar-container">
+                             <div id="yoga-progress-bar" class="progress-bar bg-orange-500" style="width: 0%;"></div>
+                         </div>
+                     </div>
+                     <ul id="yoga-list" class="space-y-3"></ul>
+                 </div>
+            </div>
+             <div id="yoga-leaderboard" class="hidden container mx-auto p-4 md:p-8 max-w-2xl">
+                 <button class="btn-secondary mb-6" onclick="showScreen('yoga-plan', 'yoga-leaderboard')"><i class="fas fa-arrow-left mr-2"></i><span data-translate-key="back_to_plan">Back to Plan</span></button>
+                 <div class="card p-8">
+                     <h2 class="text-2xl font-bold mb-6 text-center" data-translate-key="yoga_leaderboard_title">Yoga Leaderboard</h2>
+                     <ul id="yoga-leaderboard-list" class="space-y-3"></ul>
+                 </div>
+             </div>
+            <div id="yoga-ai-posture-screen" class="hidden container mx-auto p-4 md:p-8 max-w-3xl">
+                 <button class="btn-secondary mb-6" onclick="showScreen('yoga-hub-screen', 'yoga-ai-posture-screen')"><i class="fas fa-arrow-left mr-2"></i><span data-translate-key="back_to_hub">Back to Yoga Hub</span></button>
+                 <div class="card p-8 text-center">
+                     <h2 class="text-2xl font-bold mb-2" data-translate-key="ai_posture_check">AI Posture Check</h2>
+                     <p class="text-gray-500 mb-6" data-translate-key="ai_posture_check_subtitle">Click below to start the live analysis of your 'Warrior II' pose.</p>
+                    
+                     <div class="bg-gray-800 rounded-lg p-4 text-center flex items-center justify-center aspect-video mb-4 relative">
+                         <video id="live-camera-feed" class="w-full h-full rounded-lg hidden" autoplay playsinline></video>
+                         <div id="camera-placeholder" class="absolute">
+                             <i class="fas fa-video text-6xl text-gray-500"></i>
+                         </div>
+                     </div>
+
+                     <button id="start-analysis-btn" class="btn-primary w-full mt-2"><i class="fas fa-camera mr-2"></i><span data-translate-key="start_posture_analyzer">Start Posture Analyser</span></button>
+                 </div>
+                 <div id="ai-results" class="card p-8 mt-8 hidden">
+                     <h3 class="text-xl font-bold mb-4" data-translate-key="analysis_results">Analysis Results</h3>
+                     <div id="ai-feedback" class="space-y-4"></div>
+                 </div>
+            </div>
+            <div id="yoga-completion-screen" class="hidden container mx-auto p-4 md:p-8 max-w-lg text-center">
+                 <div class="card p-8">
+                     <i class="fas fa-peace text-7xl text-orange-500 mb-4"></i>
+                     <h2 class="text-3xl font-bold mb-2" data-translate-key="yoga_completion_title">Namaste! Session Complete.</h2>
+                     <p class="text-gray-600 mb-6" data-translate-key="yoga_completion_desc">You've nourished your mind and body. Carry this peace with you.</p>
+                     <button class="btn-primary" onclick="showModeSelection()" data-translate-key="keep_going">Back to Home</button>
+                 </div>
+            </div>
+        </div>
+        
+        <div id="gym-tracker-mode" class="hidden">
+            <div id="city-selection-screen" class="container mx-auto p-4 md:p-8">
+                <button class="btn-secondary mb-8" onclick="showModeSelection()"><i class="fas fa-arrow-left mr-2"></i><span data-translate-key="back_to_selection">Back to Dashboard</span></button>
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-gray-800" data-translate-key="select_city_title">Select Your City</h2>
+                    <p class="text-gray-600" data-translate-key="select_city_subtitle">Find government sports facilities near you.</p>
+                </div>
+                <div id="city-list" class="flex flex-wrap justify-center gap-4"></div>
+            </div>
+            <div id="gym-list-screen" class="hidden container mx-auto p-4 md:p-8">
+                 <button class="btn-secondary mb-8" onclick="showScreen('city-selection-screen', 'gym-list-screen')"><i class="fas fa-arrow-left mr-2"></i><span data-translate-key="back_to_city_selection">Back to City Selection</span></button>
+                 <h2 id="gym-list-title" class="text-3xl font-bold text-gray-800 text-center mb-8"></h2>
+                 <div id="gym-list-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+        </div>
+
+
+        <div class="fixed bottom-6 right-6 z-40">
+            <div id="chatbot-container" class="w-80 bg-white rounded-xl shadow-2xl hidden transition-all duration-300">
+                <div class="bg-blue-800 text-white p-4 rounded-t-xl flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold" data-translate-key="chatbot_title">Fit Bharat Assistant</h3>
+                        <p class="text-sm opacity-80" data-translate-key="chatbot_subtitle">Your AI Fitness Guide</p>
+                    </div>
+                </div>
+                <div id="chat-messages" class="p-4 space-y-3"></div>
+                <div class="p-4 border-t">
+                    <div class="flex space-x-2">
+                        <input type="text" id="chatbot-input" class="form-input" data-translate-key="chatbot_placeholder" placeholder="Ask about fitness...">
+                        <button id="chatbot-send" class="btn-primary px-4"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+            <button id="chatbot-toggle" class="bg-blue-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg transition-transform hover:scale-110">
+                <i id="chatbot-icon" class="fas fa-comments text-2xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="timer-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl relative">
+            <button onclick="hideTimerModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+            <h2 id="timer-item-name" class="text-3xl font-bold mb-6 text-gray-800">Exercise Name</h2>
+            <div class="relative w-64 h-64 mx-auto">
+                <svg class="w-full h-full" viewBox="0 0 100 100">
+                    <circle class="text-gray-200" stroke-width="8" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" />
+                    <circle id="timer-modal-progress" class="text-blue-600" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" style="transform: rotate(-90deg); transform-origin: 50% 50%; stroke-dasharray: 282.7; stroke-dashoffset: 282.7; transition: stroke-dashoffset 1s linear;" />
+                </svg>
+                <div id="timer-modal-time" class="absolute inset-0 flex items-center justify-center text-5xl font-bold text-gray-800">
+                    120
+                </div>
+            </div>
+            <div class="mt-6">
+                <button id="timer-modal-stop" class="btn-secondary px-8" data-translate-key="stop_timer">Stop</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto p-8">
+            <div class="grid md:grid-cols-4 gap-8 text-center md:text-left">
+                <div>
+                    <h4 class="font-bold mb-3">Fit Bharat Mission</h4>
+                    <p class="text-sm text-gray-400">A national initiative to promote health and wellness among all citizens of India.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-3">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-300 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Contact</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-3">Legal</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                     <img src="image_2x.jpeg" alt="Emblem of India" class="h-16 mx-auto md:mx-0">
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
+                <p>&copy; <span id="footer-year"></span> <span data-translate-key="ministry_title">FitBharat</span>, Government of India. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <div id="loader" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="text-center">
+            <svg class="animate-spin h-10 w-10 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <p id="loader-text" class="mt-3 font-semibold text-gray-700">Generating your plan...</p>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- STATE MANAGEMENT ---
+            let currentMode = null; let currentLang = 'en'; let activeTimer = null;
+            let completedExercises = 0; let totalExercises = 0;
+            let selectedSport = null;
+            let cameraStream = null;
+            let streakCount = 5; // Example starting streak
+
+            // --- DOM ELEMENTS ---
+            const welcomeOverlay = document.getElementById('welcome-overlay');
+            const welcomeStep1 = document.getElementById('welcome-step-1');
+            const welcomeStep2 = document.getElementById('welcome-step-2');
+            
+            const loginOverlay = document.getElementById('login-overlay');
+            const loginRegisterBtn = document.getElementById('login-register-btn');
+            const emailInputModal = document.getElementById('email-input-modal');
+            const otpFieldModal = document.getElementById('otp-field-modal');
+            const otpInputModal = document.getElementById('otp-input-modal');
+            const sendOtpBtnModal = document.getElementById('send-otp-btn-modal');
+            const verifyOtpBtnModal = document.getElementById('verify-otp-btn-modal');
+
+            const dashboardContent = document.getElementById('dashboard-content');
+            const languageSelect = document.getElementById('language-select');
+            const loader = document.getElementById('loader');
+            const loaderText = document.getElementById('loader-text');
+
+            const chatbotToggle = document.getElementById('chatbot-toggle');
+            const chatbotContainer = document.getElementById('chatbot-container');
+            const chatbotIcon = document.getElementById('chatbot-icon');
+            const chatbotSend = document.getElementById('chatbot-send');
+            const chatbotInput = document.getElementById('chatbot-input');
+            const chatMessages = document.getElementById('chat-messages');
+            
+            // --- DATA ---
+            const TRANSLATIONS = {
+                en: { 
+                    ministry_title: "FitBharat", 
+                    welcome_title: "Welcome to the National Fitness Portal", 
+                    welcome_subtitle: "Choose your fitness journey from the options below.", 
+                    athlete_mode_title: "Athlete Mode", 
+                    athlete_mode_desc: "Advanced training plans, performance tracking, and sport-specific drills for competitive athletes.", 
+                    weight_loss_mode_title: "Weight Loss Mode", 
+                    weight_loss_mode_desc: "Achieve your weight loss goals with guided exercises, BMI tracking, and personalized plans based on your profile.", 
+                    yoga_mode_title: "Yoga Mode", 
+                    yoga_mode_desc: "Find your balance with personalized asana sessions for all levels, focusing on mindfulness and flexibility.", 
+                    gym_tracker_mode_title: "Gym Tracker", 
+                    gym_tracker_mode_desc: "Locate and explore government-approved sports complexes and gyms in your city to start your training.",
+                    back_to_selection: "Back to Dashboard", profile_title: "Your Fitness Profile", height_label: "Height (cm)", weight_label: "Weight (kg)", time_label: "Time Available (minutes)", generate_workout_btn: "Generate My Workout", workout_plan_title: "Your Personal Workout Plan", workout_plan_subtitle: "Complete the exercises one by one.", completion_title: "Congratulations!", completion_desc: "Workout complete! You're on your way to a fitter you. Come back tomorrow for your next session.", keep_going: "Back to Home", chatbot_title: "Fit Bharat Assistant", chatbot_subtitle: "Your AI Fitness Guide", chatbot_placeholder: "Ask about fitness...", chatbot_responses: { hello: "Hello! How can I help you with your fitness journey today?", diet: "A balanced diet is key. Focus on lean proteins, complex carbohydrates, and plenty of vegetables. Avoid processed foods and sugary drinks.", protein: "Good sources of protein include chicken breast, fish, eggs, tofu, lentils, and Greek yogurt. It's essential for muscle repair and growth.", endurance: "To build endurance, focus on cardiovascular exercises like running, swimming, or cycling. Gradually increase the duration and intensity of your workouts.", strength: "For strength, incorporate resistance training like weightlifting, push-ups, and squats. Ensure you are using proper form to avoid injury.", "warm-up": "Always warm up for 5-10 minutes before a workout with light cardio (like jogging) and dynamic stretches (like arm circles and leg swings).", default: "I can help with questions about diet, protein, endurance, strength, and warm-ups. What would you like to know?" }, yoga_profile_title: "Your Yoga Profile", experience_label: "Experience Level", beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced", generate_yoga_btn: "Generate My Yoga Session", yoga_plan_title: "Your Personal Yoga Session", yoga_completion_title: "Namaste! Session Complete.", yoga_completion_desc: "You've nourished your mind and body. Carry this peace with you.", athlete_dashboard_title: "Athlete Training Dashboard", coming_soon: "This feature is under development. Please check back soon!", start_journey: "Start Your Journey", select_language: "Select Your Language", login_title: "Login to Your Account", login_subtitle: "Enter your email to receive an OTP.", email_label: "Email Address", send_otp_btn: "Send OTP", otp_label: "Enter OTP", verify_otp_btn: "Verify & Continue", otp_sent_alert: "OTP Sent! For this demo, your OTP is 123456.", invalid_otp_alert: "Invalid OTP. Please try again.", invalid_email_alert: "Please enter a valid email address.", ministry_title_modal: "FitBharat", select_sport_title: "Select Your Sport", track_field_title: "Track & Field (Athletics)", racquet_sports_title: "Racquet Sports", team_sports_title: "Team Sports", individual_sports_title: "Individual Sports", athlete_profile_title: "Your Athlete Profile", generate_athlete_plan_btn: "Generate My Training Plan", athlete_plan_subtitle: "Your personalized daily training regimen.", daily_schedule_title: "Weekly Schedule", drills_title: "Sport-Specific Drills", strength_title: "Strength & Conditioning", water_title: "Water Intake Tracker", water_subtitle: "Aim for 12-16 glasses a day.", glasses: "Glasses", gender_selection_title: "Select Your Gender", gender_selection_subtitle: "This helps us personalize your experience.", male: "Male", female: "Female", select_city_title: "Select Your City", select_city_subtitle: "Find government sports facilities near you.", "back_to_city_selection": "Back to City Selection", "facilities_in": "Facilities in", "stop_timer": "Stop", leaderboard: "Leaderboard", rank: "Rank", user: "User", score: "Score", athlete_leaderboard_title: "Athlete Leaderboard", weightloss_leaderboard_title: "Weight Loss Leaderboard", yoga_leaderboard_title: "Yoga Leaderboard", back_to_plan: "Back to Plan", back_to_hub: "Back to Yoga Hub", start_session: "Start a Session", start_session_desc: "Begin your personalized yoga practice.", ai_posture_check: "AI Posture Check", ai_posture_check_desc: "Get feedback on your yoga form.", ai_posture_check_subtitle: "Click below to start the live analysis of your 'Warrior II' pose.", start_posture_analyzer: "Start Posture Analyser", analysis_results: "Analysis Results", ai_positive_feedback: "<strong>Great work!</strong> Your front knee is bent at a perfect 90-degree angle and your arms are parallel to the floor.", ai_improvement_feedback: "<strong>For improvement:</strong> Try to relax your shoulders away from your ears and distribute your weight evenly between both feet.", "login_register": "Login / Register", streak_extended_alert: "Streak extended! Keep it up!", connect_expert_title: "Need Personal Guidance?", connect_expert_desc: "Book a one-on-one session with a certified professional.", connect_expert_btn: "Connect with an Expert" },
+                hi: { 
+                    ministry_title: "राष्ट्रीय स्वास्थ्य और फिटनेस मिशन", 
+                    welcome_title: "राष्ट्रीय फिटनेस पोर्टल में आपका स्वागत है", 
+                    welcome_subtitle: "नीचे दिए गए विकल्पों में से अपनी फिटनेस यात्रा चुनें।", 
+                    athlete_mode_title: "एथलीट मोड", 
+                    athlete_mode_desc: "प्रतिस्पर्धी एथलीटों के लिए उन्नत प्रशिक्षण योजनाएं, प्रदर्शन ट्रैकिंग और खेल-विशिष्ट अभ्यास।", 
+                    weight_loss_mode_title: "वजन घटाने का मोड", 
+                    weight_loss_mode_desc: "निर्देशित व्यायाम, बीएमआई ट्रैकिंग और आपकी प्रोफ़ाइल के आधार पर व्यक्तिगत योजनाओं के साथ अपने वजन घटाने के लक्ष्य प्राप्त करें।", 
+                    yoga_mode_title: "योग मोड", 
+                    yoga_mode_desc: "माइंडफुलनेस और लचीलेपन पर ध्यान केंद्रित करते हुए, सभी स्तरों के लिए व्यक्तिगत आसन सत्रों के साथ अपना संतुलन खोजें।",
+                    gym_tracker_mode_title: "जिम ट्रैकर", 
+                    gym_tracker_mode_desc: "अपना प्रशिक्षण शुरू करने के लिए अपने शहर में सरकार द्वारा अनुमोदित खेल परिसरों और जिम खोजें और उनके बारे में जानें।",
+                    back_to_selection: "मुख्य पृष्ठ पर वापस जाएं", profile_title: "आपकी फिटनेस प्रोफ़ाइल", height_label: "ऊंचाई (सेमी)", weight_label: "वजन (किग्रा)", time_label: "उपलब्ध समय (मिनट)", generate_workout_btn: "मेरा वर्कआउट जेनरेट करें", workout_plan_title: "आपकी व्यक्तिगत वर्कआउट योजना", workout_plan_subtitle: "एक-एक करके व्यायाम पूरा करें।", completion_title: "बधाई हो!", completion_desc: "वर्कआउट पूरा हुआ! आप एक फिटर की ओर बढ़ रहे हैं। अपने अगले सत्र के लिए कल वापस आएं।", keep_going: "होम पर वापस जाएं", chatbot_title: "फिट भारत सहायक", chatbot_subtitle: "आपका एआई फिटनेस गाइड", chatbot_placeholder: "फिटनेस के बारे में पूछें...", chatbot_responses: { hello: "नमस्ते! आज मैं आपकी फिटनेस यात्रा में कैसे मदद कर सकता हूँ?", diet: "संतुलित आहार महत्वपूर्ण है। लीन प्रोटीन, जटिल कार्बोहाइड्रेट और बहुत सारी सब्जियों पर ध्यान दें।", protein: "प्रोटीन के अच्छे स्रोत चिकन, मछली, अंडे, टोफू और दाल हैं। यह मांसपेशियों की मरम्मत के लिए आवश्यक है।", endurance: "सहनशक्ति बढ़ाने के लिए दौड़ना, तैरना या साइकिल चलाना जैसे कार्डियो व्यायाम करें।", strength: "ताकत के लिए, वजन उठाना, पुश-अप्स और स्क्वैट्स जैसे प्रतिरोध प्रशिक्षण को शामिल करें।", "warm-up": "वर्कआउट से पहले 5-10 मिनट के लिए हमेशा वार्म-अप करें, जैसे हल्की जॉगिंग और डायनामिक स्ट्रेच।", default: "मैं आहार, प्रोटीन, सहनशक्ति, शक्ति और वार्म-अप के बारे में सवालों में मदद कर सकता हूँ।" }, yoga_profile_title: "आपकी योग प्रोफ़ाइल", experience_label: "अनुभव स्तर", beginner: "शुरुआती", intermediate: "मध्यवर्ती", advanced: "उन्नत", generate_yoga_btn: "मेरा योग सत्र जेनरेट करें", yoga_plan_title: "आपका व्यक्तिगत योग सत्र", yoga_completion_title: "नमस्ते! सत्र पूरा हुआ।", yoga_completion_desc: "आपने अपने मन और शरीर को पोषित किया है। इस शांति को अपने साथ रखें।", athlete_dashboard_title: "एथलीट प्रशिक्षण डैशबोर्ड", coming_soon: "यह सुविधा निर्माधीन है। कृपया जल्द ही फिर से जाँच करें!", start_journey: "अपनी यात्रा शुरू करें", select_language: "अपनी भाषा चुनें", login_title: "अपने खाते में लॉग इन करें", login_subtitle: "OTP प्राप्त करने के लिए अपना ईमेल दर्ज करें।", email_label: "ईमेल पता", send_otp_btn: "OTP भेजें", otp_label: "OTP दर्ज करें", verify_otp_btn: "सत्यापित करें और जारी रखें", otp_sent_alert: "OTP भेजा गया! इस डेमो के लिए, आपका OTP 123456 है।", invalid_otp_alert: "अमान्य OTP। कृपया पुन: प्रयास करें।", invalid_email_alert: "कृपया एक वैध ईमेल पता दर्ज करें।", ministry_title_modal: "राष्ट्रीय स्वास्थ्य और फिटनेस मिशन", select_sport_title: "अपना खेल चुनें", track_field_title: "ट्रैक एंड फील्ड (एथलेटिक्स)", racquet_sports_title: "रैकेट खेल", team_sports_title: "टीम खेल", individual_sports_title: "व्यक्तिगत खेल", athlete_profile_title: "आपकी एथलीट प्रोफ़ाइल", generate_athlete_plan_btn: "मेरी प्रशिक्षण योजना बनाएं", athlete_plan_subtitle: "आपकी व्यक्तिगत दैनिक प्रशिक्षण व्यवस्था।", daily_schedule_title: "साप्ताहिक कार्यक्रम", drills_title: "खेल-विशिष्ट अभ्यास", strength_title: "शक्ति और कंडीशनिंग", water_title: "पानी का सेवन ट्रैकर", water_subtitle: "दिन में 12-16 गिलास का लक्ष्य रखें।", glasses: "गिलास", gender_selection_title: "अपना लिंग चुनें", gender_selection_subtitle: "यह हमें आपके अनुभव को निजीकृत करने में मदद करता है।", male: "पुरुष", female: "महिला", select_city_title: "अपना शहर चुनें", select_city_subtitle: "अपने आस-पास सरकारी खेल सुविधाएं खोजें।", "back_to_city_selection": "शहर चयन पर वापस जाएं", "facilities_in": "में सुविधाएं", "stop_timer": "रोकें", leaderboard: "लीडरबोर्ड", rank: "रैंक", user: "उपयोगकर्ता", score: "स्कोर", athlete_leaderboard_title: "एथलीट लीडरबोर्ड", weightloss_leaderboard_title: "वजन घटाने का लीडरबोर्ड", yoga_leaderboard_title: "योग लीडरबोर्ड", back_to_plan: "योजना पर वापस जाएं", back_to_hub: "योग हब पर वापस जाएं", start_session: "सत्र शुरू करें", start_session_desc: "अपनी व्यक्तिगत योग साधना शुरू करें।", ai_posture_check: "एआई आसन जांच", ai_posture_check_desc: "अपने योग रूप पर प्रतिक्रिया प्राप्त करें।", ai_posture_check_subtitle: "अपने 'वॉरियर II' पोज का लाइव विश्लेषण शुरू करने के लिए नीचे क्लिक करें।", start_posture_analyzer: "आसन विश्लेषक शुरू करें", analysis_results: "विश्लेषण परिणाम", ai_positive_feedback: "<strong>बहुत बढ़िया!</strong> आपका अगला घुटना 90 डिग्री के कोण पर पूरी तरह से मुड़ा हुआ है और आपकी भुजाएं फर्श के समानांतर हैं।", ai_improvement_feedback: "<strong>सुधार के लिए:</strong> अपने कंधों को अपने कानों से दूर रखने की कोशिश करें और अपने वजन को दोनों पैरों के बीच समान रूप से वितरित करें।", "login_register": "लॉगिन / रजिस्टर करें", streak_extended_alert: "आपकी स्ट्रीक बढ़ गई! इसे जारी रखें!", connect_expert_title: "व्यक्तिगत मार्गदर्शन चाहिए?", connect_expert_desc: "एक प्रमाणित पेशेवर के साथ आमने-सामने सत्र बुक करें।", connect_expert_btn: "विशेषज्ञ से जुड़ें" },
+            };
+            
+            // ... (The rest of the JavaScript is unchanged)
+            
+            const SPORTS_DATA = { track_field: { title_key: "track_field_title", icon: "fa-person-running", sports: { sprinting: { name: { en: "Sprinting (100m/200m)", hi: "स्प्रिंटिंग (100मी/200मी)"}, plan: { drills: [{name: "Block starts", details: "5 sets x 3 reps"}, {name: "Acceleration drills", details: "15 minutes"}, {name: "Flying 30s", details: "6 sets"}], strength: [{name: "Squats", details: "4 sets x 6 reps"}, {name: "Deadlifts", details: "3 sets x 5 reps"}, {name: "Plyometrics", details: "20 minutes"}] } }, distance_running: { name: { en: "Distance Running (5k/10k)", hi: "डिस्टेंस रनिंग (5k/10k)" }, plan: { drills: [{name: "Tempo runs", details: "25 minutes"}, {name: "Interval training", details: "8 x 400m"}, {name: "Hill repeats", details: "6 sets"}], strength: [{name: "Lunges", details: "3 sets x 12 reps"}, {name: "Core work", details: "15 minutes"}, {name: "Calf raises", details: "4 sets x 15 reps"}] } }, javelin: { name: { en: "Javelin Throw", hi: "जेवलिन थ्रो" }, plan: { drills: [{name: "Medicine ball throws", details: "4 sets x 8 reps"}, {name: "Pull-overs", details: "3 sets x 10 reps"}, {name: "Approach run practice", details: "20 minutes"}], strength: [{name: "Overhead press", details: "4 sets x 6 reps"}, {name: "Rows", details: "4 sets x 8 reps"}, {name: "Rotational core", details: "15 minutes"}] } }, } }, racquet_sports: { title_key: "racquet_sports_title", icon: "fa-table-tennis-paddle-ball", sports: { badminton: { name: { en: "Badminton", hi: "बैडमिन्टन" }, plan: { drills: [{name: "Footwork drills", details: "20 minutes"}, {name: "Net shots", details: "15 minutes"}, {name: "Smash practice", details: "15 minutes"}], strength: [{name: "Lateral lunges", details: "3 sets x 10 reps"}, {name: "Wrist strengthening", details: "10 minutes"}, {name: "Agility ladder", details: "15 minutes"}] } }, tennis: { name: { en: "Tennis", hi: "टेनिस" }, plan: { drills: [{name: "Serve practice", details: "30 serves"}, {name: "Volley drills", details: "15 minutes"}, {name: "Forehand/backhand consistency", details: "20 minutes"}], strength: [{name: "Medicine ball slams", details: "4 sets x 8 reps"}, {name: "Rotational cable chops", details: "3 sets x 12 reps"}, {name: "Shoulder stability", details: "15 minutes"}] } }, } }, team_sports: { title_key: "team_sports_title", icon: "fa-futbol", sports: { football: { name: { en: "Football", hi: "फ़ुटबॉल" }, plan: { drills: [{name: "Dribbling cones", details: "15 minutes"}, {name: "Passing accuracy", details: "20 minutes"}, {name: "Shooting drills", details: "20 shots"}], strength: [{name: "Box jumps", details: "4 sets x 8 reps"}, {name: "Single-leg RDLs", details: "3 sets x 10 reps"}, {name: "Plank variations", details: "10 minutes"}] } }, hockey: { name: { en: "Hockey", hi: "हॉकी" }, plan: { drills: [{name: "Stickhandling", details: "20 minutes"}, {name: "Push pass", details: "15 minutes"}, {name: "Indian dribble", details: "15 minutes"}], strength: [{name: "Grip strength", details: "10 minutes"}, {name: "Lower back extensions", details: "3 sets x 12 reps"}, {name: "Lateral bounds", details: "4 sets x 8 reps"}] } }, } }, individual_sports: { title_key: "individual_sports_title", icon: "fa-person-swimming", sports: { swimming: { name: { en: "Swimming", hi: "तैराकी" }, plan: { drills: [{name: "Kickboard drills", details: "10 x 50m"}, {name: "Pull buoy sets", details: "8 x 100m"}, {name: "Hypoxic training", details: "10 minutes"}], strength: [{name: "Lat pulldowns", details: "4 sets x 10 reps"}, {name: "Tricep extensions", details: "3 sets x 12 reps"}, {name: "Scapular stabilization", details: "15 minutes"}] } }, archery: { name: { en: "Archery", hi: "तीरंदाजी" }, plan: { drills: [{name: "Blank bale shooting", details: "30 arrows"}, {name: "Form drills", details: "20 minutes"}, {name: "Scoring practice", details: "5 ends"}], strength: [{name: "Scapular wall slides", details: "3 sets x 12 reps"}, {name: "Face pulls", details: "4 sets x 15 reps"}, {name: "Single-arm rows", details: "3 sets x 10 reps"}] } }, shooting: { name: { en: "Shooting", hi: "निशानेबाजी" }, plan: { drills: [{name: "Dry firing", details: "20 minutes"}, {name: "Trigger control", details: "15 minutes"}, {name: "Stance stability", details: "15 minutes"}], strength: [{name: "Forearm curls", details: "3 sets x 15 reps"}, {name: "Shoulder external rotation", details: "3 sets x 12 reps"}, {name: "Core stability", details: "15 minutes"}] } } } } };
+            const EXERCISES = { overweight: ["Jumping Jacks", "High Knees", "Burpees", "Mountain Climbers", "Squats", "Push-ups", "Plank"], normal: ["Running in Place", "Lunges", "Crunches", "Leg Raises", "Glute Bridges", "Dumbbell Rows", "Bicep Curls"], underweight: ["Bodyweight Squats", "Incline Push-ups", "Assisted Pull-ups", "Dumbbell Press", "Goblet Squat", "Bird-Dog", "Dead Bug"] };
+            const YOGA_ASANAS = { beginner: ["Mountain Pose (Tadasana)", "Cat-Cow Stretch (Marjaryasana-Bitilasana)", "Downward-Facing Dog (Adho Mukha Svanasana)", "Warrior I (Virabhadrasana I)", "Bridge Pose (Setu Bandhasana)", "Corpse Pose (Savasana)"], intermediate: ["Warrior II (Virabhadrasana II)", "Triangle Pose (Trikonasana)", "Chair Pose (Utkatasana)", "Cobra Pose (Bhujangasana)", "Boat Pose (Navasana)", "Camel Pose (Ustrasana)"], advanced: ["Crow Pose (Bakasana)", "Headstand (Sirsasana)", "Wheel Pose (Chakrasana)", "Pigeon Pose (Kapotasana)", "Handstand (Adho Mukha Vrksasana)", "Lotus Pose (Padmasana)"] };
+            const GYM_DATA = { delhi: [{name: "Jawaharlal Nehru Stadium", area: "Lodhi Road", facilities: "Athletics, Gym, Football"}, {name: "Indira Gandhi Indoor Stadium", area: "ITO", facilities: "Gymnastics, Basketball, Badminton"}, {name: "Thyagaraj Sports Complex", area: "INA", facilities: "Athletics, Gym, Tennis"}], mumbai: [{name: "Andheri Sports Complex", area: "Andheri West", facilities: "Athletics, Swimming, Football"}, {name: "Dharavi Sports Complex", area: "Dharavi", facilities: "Gym, Kabaddi, Volleyball"}], bhubaneswar: [{name: "Kalinga Stadium", area: "Nayapalli", facilities: "Hockey, Athletics, Football, Gym"}, {name: "Biju Patnaik Swimming Pool", area: "Kalinga Vihar", facilities: "Swimming"}], kolkata: [{name: "Salt Lake Stadium", area: "Salt Lake", facilities: "Football, Athletics"}, {name: "Netaji Indoor Stadium", area: "Eden Gardens", facilities: "Basketball, Tennis, Gym"}], gandhinagar: [{name: "Sanskardham Sports Academy", area: "Bopal", facilities: "Multiple Sports, Gym"}, {name: "Sardar Vallabhbhai Patel Sports Enclave", area: "Motera", facilities: "Cricket, Athletics, Football"}], jaipur: [{name: "Sawai Mansingh Stadium", area: "Rambagh", facilities: "Cricket, Gym, Tennis"}, {name: "Chaugan Stadium", area: "Gangori Bazaar", facilities: "Football, Basketball"}] };
+            const LEADERBOARD_DATA = { athlete: [ {name: "Rohan Sharma", score: 15200}, {name: "Priya Patel", score: 14800}, {name: "Amit Kumar", score: 14500}, {name: "Sneha Reddy", score: 13900}, {name: "Vikram Singh", score: 13500} ], weightloss: [ {name: "Anjali Mehta", score: 850}, {name: "Rajesh Gupta", score: 820}, {name: "Sunita Devi", score: 790}, {name: "Manoj Tiwari", score: 750}, {name: "Kavita Rao", score: 720} ], yoga: [ {name: "Deepa Iyengar", score: 9800}, {name: "Sanjay Joshi", score: 9500}, {name: "Meera Desai", score: 9200}, {name: "Arun Verma", score: 8900}, {name: "Geeta Nair", score: 8600} ] };
+
+            // --- FUNCTIONS ---
+            function showLoader(show, text = "Generating your plan...") {
+                loaderText.textContent = text;
+                loader.classList.toggle('hidden', !show);
+            }
+            
+            // UI & Navigation
+            window.selectMode = (mode) => {
+                // Hide the main dashboard content
+                dashboardContent.classList.add('hidden');
+
+                // If another mode is already active, hide its entire container first
+                if (currentMode && currentMode !== mode) {
+                    document.getElementById(`${currentMode}-mode`).classList.add('hidden');
+                }
+
+                // Set the new mode and show its container
+                currentMode = mode;
+                document.getElementById(`${mode}-mode`).classList.remove('hidden');
+                
+                // Logic to show the first screen within the selected mode
+                if(mode === 'athlete') {
+                    showScreen('sport-selection-screen', null);
+                    renderLeaderboard('athlete-leaderboard-list', LEADERBOARD_DATA.athlete);
+                } else if (mode === 'weight-loss') {
+                    showScreen('weight-loss-profile-screen', null);
+                    renderLeaderboard('weightloss-leaderboard-list', LEADERBOARD_DATA.weightloss, "pts");
+                } else if (mode === 'yoga') {
+                    showScreen('yoga-hub-screen', null);
+                    renderLeaderboard('yoga-leaderboard-list', LEADERBOARD_DATA.yoga);
+                } else if (mode === 'gym-tracker') {
+                    showScreen('city-selection-screen', null);
+                }
+            };
+            
+            window.showModeSelection = () => {
+                dashboardContent.classList.remove('hidden');
+                if (currentMode) {
+                    document.getElementById(`${currentMode}-mode`).classList.add('hidden');
+                    const screens = document.getElementById(`${currentMode}-mode`).children;
+                    for(let screen of screens) screen.classList.add('hidden');
+                }
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                    cameraStream = null;
+                }
+                currentMode = null;
+                if(activeTimer) clearInterval(activeTimer);
+            };
+            
+            window.showScreen = (screenToShow, screenToHide) => {
+                if(screenToHide) {
+                    const screen = document.getElementById(screenToHide);
+                    if(screen) screen.classList.add('hidden');
+                }
+                document.getElementById(screenToShow).classList.remove('hidden');
+            };
+
+            // Language/Translation
+            window.setLanguage = (lang) => {
+                updateLanguage(lang); welcomeStep1.classList.add('hidden'); welcomeStep2.classList.remove('hidden');
+            };
+            function updateLanguage(lang) {
+                currentLang = lang; languageSelect.value = lang;
+                document.documentElement.lang = lang; 
+                document.querySelectorAll('[data-translate-key]').forEach(el => {
+                    const key = el.getAttribute('data-translate-key'); const translation = getTranslation(key);
+                    if (translation) {
+                        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = translation;
+                        else el.innerHTML = translation;
+                    }
+                });
+                renderSports(); renderCitySelection();
+            }
+            function getTranslation(key) {
+                const keys = key.split('.'); let result = TRANSLATIONS[currentLang] || TRANSLATIONS['en'];
+                for (const k of keys) {
+                    result = result?.[k];
+                    if (result === undefined) return `[${key}]`;
+                }
+                return result;
+            }
+
+            // Custom Notification
+            function showNotification(message, type = 'success') {
+                const area = document.getElementById('notification-area');
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`; notification.textContent = message;
+                area.appendChild(notification);
+                setTimeout(() => notification.classList.add('show'), 10);
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                }, 4000);
+            }
+
+            // Authentication & Onboarding
+            window.selectGender = (gender) => {
+                welcomeOverlay.style.display = 'none';
+            };
+            
+            loginRegisterBtn.addEventListener('click', () => {
+                loginOverlay.classList.remove('hidden');
+            });
+
+            sendOtpBtnModal.addEventListener('click', () => {
+                const email = emailInputModal.value;
+                if (email && email.includes('@')) {
+                    otpFieldModal.classList.remove('hidden'); sendOtpBtnModal.classList.add('hidden');
+                    verifyOtpBtnModal.classList.remove('hidden');
+                    showNotification(getTranslation('otp_sent_alert'), 'success');
+                } else showNotification(getTranslation('invalid_email_alert'), 'error');
+            });
+            verifyOtpBtnModal.addEventListener('click', () => {
+                if (otpInputModal.value === '123456') {
+                    loginOverlay.classList.add('hidden');
+                    loginRegisterBtn.innerHTML = `<i class="fas fa-user mr-2"></i> Profile`;
+                } else showNotification(getTranslation('invalid_otp_alert'), 'error');
+            });
+
+            // Athlete Mode
+            function renderSports() {
+                const container = document.getElementById('sports-container'); container.innerHTML = '';
+                Object.entries(SPORTS_DATA).forEach(([categoryKey, categoryData]) => {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.innerHTML = `<h3 class="text-2xl font-bold mb-4 text-gray-700"><i class="fas ${categoryData.icon} mr-3 text-blue-500"></i><span data-translate-key="${categoryData.title_key}">${getTranslation(categoryData.title_key)}</span></h3>
+                        <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            ${Object.entries(categoryData.sports).map(([sportKey, sportData]) => `
+                                <div id="sport-${sportKey}" class="card sport-card p-4 text-center transition-all" onclick="selectSport('${sportKey}')">
+                                    <p class="font-semibold">${sportData.name[currentLang] || sportData.name['en']}</p>
+                                </div>`).join('')}
+                        </div>`;
+                    container.appendChild(categoryDiv);
+                });
+            }
+            window.selectSport = (sportKey) => {
+                 selectedSport = sportKey;
+                 document.querySelectorAll('.sport-card').forEach(c => c.classList.remove('selected'));
+                 document.getElementById(`sport-${sportKey}`).classList.add('selected');
+                 setTimeout(() => showScreen('athlete-profile-screen', 'sport-selection-screen'), 300);
+            };
+            document.getElementById('generate-athlete-plan-btn').addEventListener('click', () => {
+                const height = document.getElementById('athlete-height').value, weight = document.getElementById('athlete-weight').value;
+                if (height && weight && selectedSport) {
+                    showLoader(true);
+                    setTimeout(() => {
+                        renderAthletePlan();
+                        showScreen('athlete-plan', 'athlete-profile-screen');
+                        showLoader(false);
+                    }, 1000);
+                } else showNotification("Please fill all fields.", 'error');
+            });
+            function renderAthletePlan() {
+                let planData = null, sportTitle = "Your Training Plan";
+                for (const categoryKey in SPORTS_DATA) {
+                    if (SPORTS_DATA[categoryKey].sports[selectedSport]) {
+                        const sportInfo = SPORTS_DATA[categoryKey].sports[selectedSport];
+                        planData = sportInfo.plan; sportTitle = sportInfo.name[currentLang] || sportInfo.name['en']; break;
+                    }
+                }
+                document.getElementById('athlete-plan-title').innerHTML = sportTitle;
+                if (!planData) { return; }
+                const drillsList = document.getElementById('drills-list');
+                drillsList.innerHTML = planData.drills.map(d => `<li class="border-b pb-2"><div class="flex justify-between items-center"><span>${d.name}</span><span class="text-sm font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded">${d.details}</span></div></li>`).join('');
+                const strengthList = document.getElementById('strength-list');
+                strengthList.innerHTML = planData.strength.map(s => `<li class="border-b pb-2"><div class="flex justify-between items-center"><span>${s.name}</span><span class="text-sm font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded">${s.details}</span></div></li>`).join('');
+                renderSchedule(); renderWaterTracker();
+            }
+            function renderSchedule() {
+                 const tabsContainer = document.getElementById('schedule-tabs'), contentContainer = document.getElementById('schedule-content');
+                 if (!tabsContainer || !contentContainer) return; // Exit if elements are not on the page
+                 tabsContainer.innerHTML = ''; contentContainer.innerHTML = '';
+                 const days = { en: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], hi: ["सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि", "रवि"] };
+                 const scheduleFocus = { Mon: "Drills Focus", Tue: "Strength", Wed: "Active Recovery", Thu: "Drills Focus", Fri: "Strength", Sat: "Match Simulation", Sun: "Rest" };
+                 const langDays = days[currentLang] || days['en'];
+                 langDays.forEach((day, index) => {
+                      const tab = document.createElement('button'); tab.textContent = day; tab.className = 'tab-button flex-shrink-0';
+                      if(index === 0) tab.classList.add('active');
+                      tab.onclick = () => {
+                           document.querySelectorAll('#schedule-tabs .tab-button').forEach(t => t.classList.remove('active'));
+                           tab.classList.add('active');
+                           document.querySelectorAll('#schedule-content > div').forEach(c => c.classList.add('hidden'));
+                           document.getElementById(`day-content-${day}`).classList.remove('hidden');
+                      };
+                      tabsContainer.appendChild(tab);
+                      const content = document.createElement('div'); content.id = `day-content-${day}`;
+                      if(index !== 0) content.classList.add('hidden');
+                      content.innerHTML = `<p class="text-lg font-semibold">${scheduleFocus[days.en[index]]}</p>`; contentContainer.appendChild(content);
+                 });
+            }
+            function renderWaterTracker() {
+                const container = document.getElementById('water-tracker-visual'), countEl = document.getElementById('water-count');
+                let count = 0; container.innerHTML = '';
+                const updateDisplay = () => {
+                    countEl.textContent = count;
+                    const icons = container.querySelectorAll('i');
+                    icons.forEach((icon, index) => icon.classList.toggle('filled', index < count));
+                };
+                for(let i=0; i<16; i++) {
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-glass-water text-4xl text-gray-300 water-glass'; container.appendChild(icon);
+                }
+                document.getElementById('increase-water').onclick = () => { if (count < 16) { count++; updateDisplay(); } };
+                document.getElementById('decrease-water').onclick = () => { if (count > 0) { count--; updateDisplay(); } };
+                updateDisplay();
+            }
+
+            // Interactive Workout & Yoga
+            const timerModal = document.getElementById('timer-modal');
+            const timerItemName = document.getElementById('timer-item-name');
+            const timerModalProgress = document.getElementById('timer-modal-progress');
+            const timerModalTime = document.getElementById('timer-modal-time');
+            const timerModalStopBtn = document.getElementById('timer-modal-stop');
+            let currentExerciseElement = null;
+            const circumference = 2 * Math.PI * 45;
+
+            document.getElementById('generate-workout-btn').addEventListener('click', () => {
+                const height = document.getElementById('height').value, weight = document.getElementById('weight').value, time = document.getElementById('time').value;
+                if (height && weight && time) {
+                    showLoader(true);
+                    setTimeout(() => {
+                        const bmi = weight / ((height / 100) ** 2);
+                        let category = (bmi >= 25) ? 'overweight' : (bmi < 18.5) ? 'underweight' : 'normal';
+                        renderInteractiveList('workout', EXERCISES[category], time);
+                        showScreen('workout-plan', 'weight-loss-profile-screen');
+                        showLoader(false);
+                    }, 1000);
+                } else showNotification("Please fill all the fields.", 'error');
+            });
+            document.getElementById('generate-yoga-btn').addEventListener('click', () => {
+                const experience = document.getElementById('experience').value, time = document.getElementById('yoga-time').value;
+                if (experience && time) {
+                    showLoader(true);
+                    setTimeout(() => {
+                        renderInteractiveList('yoga', YOGA_ASANAS[experience], time);
+                        showScreen('yoga-plan', 'yoga-profile-screen');
+                        showLoader(false);
+                    }, 1000);
+                } else showNotification("Please fill all the fields.", 'error');
+            });
+
+            function renderInteractiveList(type, items, totalTime) {
+                const listId = `${type}-list`, barId = `${type === 'yoga' ? 'yoga-' : ''}progress-bar`;
+                const listContainer = document.getElementById(listId);
+                listContainer.innerHTML = '';
+                completedExercises = 0;
+                totalExercises = items.length;
+                updateProgressBar(0, totalExercises, barId);
+                const itemTime = Math.max(15, Math.min(119, Math.floor((totalTime * 60) / items.length)));
+
+                items.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'workout-item bg-gray-50 p-4 rounded-lg flex justify-between items-center';
+                    li.id = `${type}-item-${index}`;
+                    li.innerHTML = `
+                        <p class="font-bold text-lg">${item}</p>
+                        <div class="action-container">
+                            <button class="play-btn" onclick="showTimerModal('${type}', '${item.replace(/'/g, "\\'")}', ${itemTime}, ${index})"><i class="fas fa-play"></i></button>
+                        </div>
+                    `;
+                    listContainer.appendChild(li);
+                });
+            }
+
+            window.showTimerModal = (type, itemName, duration, index) => {
+                if (activeTimer) return;
+
+                currentExerciseElement = document.getElementById(`${type}-item-${index}`);
+                
+                timerItemName.textContent = itemName;
+                timerModalProgress.style.strokeDashoffset = circumference;
+                timerModalProgress.style.color = type === 'yoga' ? 'var(--accent-saffron)' : 'var(--primary-color)';
+
+                timerModal.classList.remove('hidden');
+                startItemTimer(type, duration, index);
+            };
+
+            window.hideTimerModal = () => {
+                if (activeTimer) {
+                    clearInterval(activeTimer);
+                    activeTimer = null;
+                }
+                timerModal.classList.add('hidden');
+                currentExerciseElement = null;
+                document.querySelectorAll('.play-btn').forEach(btn => {
+                    if (!btn.closest('.workout-item').querySelector('.fa-check-circle')) {
+                        btn.disabled = false;
+                    }
+                });
+            };
+
+            function startItemTimer(type, duration, index) {
+                document.querySelectorAll('.play-btn').forEach(btn => btn.disabled = true);
+
+                let timeLeft = duration;
+                timerModalTime.textContent = timeLeft;
+
+                activeTimer = setInterval(() => {
+                    timeLeft--;
+                    timerModalTime.textContent = timeLeft;
+                    const progressRatio = timeLeft / duration;
+                    timerModalProgress.style.strokeDashoffset = circumference * progressRatio;
+
+                    if (timeLeft <= 0) {
+                        clearInterval(activeTimer);
+                        activeTimer = null;
+                        completedExercises++;
+                        
+                        if (currentExerciseElement) {
+                            const actionContainer = currentExerciseElement.querySelector('.action-container');
+                            actionContainer.innerHTML = `<i class="fas fa-check-circle text-3xl text-green-500"></i>`;
+                            currentExerciseElement.classList.add('bg-green-50');
+                        }
+                        
+                        const barId = `${type === 'yoga' ? 'yoga-' : ''}progress-bar`;
+                        updateProgressBar(completedExercises, totalExercises, barId);
+                        
+                        hideTimerModal();
+
+                        if (completedExercises === totalExercises) {
+                            streakCount++;
+                            document.getElementById('streak-count').textContent = streakCount;
+                            showNotification(getTranslation('streak_extended_alert'), 'success');
+                            
+                            const completionScreenId = type === 'yoga' ? 'yoga-completion-screen' : 'completion-screen';
+                            setTimeout(() => showScreen(completionScreenId, `${type}-plan`), 1000);
+                        }
+                    }
+                }, 1000);
+                
+                timerModalStopBtn.onclick = () => hideTimerModal();
+            }
+
+            function updateProgressBar(current, total, barId) {
+                const progress = total > 0 ? (current / total) * 100 : 0;
+                const bar = document.getElementById(barId);
+                if (bar) bar.style.width = `${progress}%`;
+            }
+
+            // BMI Calculator
+            const heightInput = document.getElementById('height'), weightInput = document.getElementById('weight');
+            const bmiValueEl = document.getElementById('bmi-value'), bmiCategoryEl = document.getElementById('bmi-category');
+            const bmiPointer = document.querySelector('.bmi-gauge-pointer');
+            
+            function updateBMI() {
+                const h = parseFloat(heightInput.value), w = parseFloat(weightInput.value);
+                if (h > 0 && w > 0) {
+                    const bmi = (w / ((h / 100) ** 2)).toFixed(1);
+                    bmiValueEl.textContent = bmi;
+                    let category, angle;
+                    if (bmi < 18.5) { category = "Underweight"; angle = -60; } 
+                    else if (bmi < 25) { category = "Normal"; angle = -15; }
+                    else if (bmi < 30) { category = "Overweight"; angle = 30; }
+                    else { category = "Obese"; angle = 70; }
+                    bmiCategoryEl.textContent = category;
+                    bmiPointer.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+                } else {
+                    bmiValueEl.textContent = "--.-";
+                    bmiCategoryEl.textContent = "Enter details";
+                    bmiPointer.style.transform = 'translateX(-50%) rotate(0deg)';
+                }
+            }
+            heightInput.addEventListener('input', updateBMI); weightInput.addEventListener('input', updateBMI);
+            
+            // Gym Tracker
+            function renderCitySelection() {
+                const cityList = document.getElementById('city-list');
+                cityList.innerHTML = '';
+                Object.keys(GYM_DATA).forEach(city => {
+                    const cityBtn = document.createElement('button');
+                    cityBtn.className = 'btn-secondary capitalize px-6 py-3';
+                    cityBtn.textContent = city;
+                    cityBtn.onclick = () => selectCity(city);
+                    cityList.appendChild(cityBtn);
+                });
+            }
+            
+            function selectCity(city) {
+                const title = document.getElementById('gym-list-title');
+                title.innerHTML = `${getTranslation('facilities_in')} <span class="capitalize text-blue-600">${city}</span>`;
+                const container = document.getElementById('gym-list-container');
+                container.innerHTML = '';
+                
+                const gyms = GYM_DATA[city];
+                if (gyms) {
+                    gyms.forEach(gym => {
+                        const card = document.createElement('div');
+                        card.className = 'card p-6';
+                        card.innerHTML = `
+                            <h4 class="font-bold text-lg">${gym.name}</h4>
+                            <p class="text-sm text-gray-500 mb-3">${gym.area}</p>
+                            <div class="flex flex-wrap gap-2">
+                                ${gym.facilities.split(', ').map(f => `<span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">${f}</span>`).join('')}
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+                showScreen('gym-list-screen', 'city-selection-screen');
+            }
+
+
+            // Chatbot
+            chatbotToggle.addEventListener('click', () => {
+                chatbotContainer.classList.toggle('hidden');
+                if (chatbotContainer.classList.contains('hidden')) {
+                    chatbotIcon.className = 'fas fa-comments text-2xl';
+                } else {
+                    chatbotIcon.className = 'fas fa-times text-2xl';
+                    if (chatMessages.childElementCount === 0) addChatMessage('bot', getTranslation('chatbot_responses.hello'));
+                }
+            });
+            function handleChatSubmit() {
+                 const userInput = chatbotInput.value.trim();
+                 if (userInput) { addChatMessage('user', userInput); getChatbotResponse(userInput); chatbotInput.value = ''; }
+            }
+            chatbotSend.addEventListener('click', handleChatSubmit);
+            chatbotInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleChatSubmit(); });
+            function addChatMessage(sender, message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `p-3 rounded-lg max-w-xs text-sm ${sender === 'user' ? 'bg-blue-100 self-end ml-auto' : 'bg-gray-100 self-start'}`;
+                messageDiv.textContent = message; chatMessages.appendChild(messageDiv); chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            function getChatbotResponse(userInput) {
+                const lowerInput = userInput.toLowerCase(); const responses = TRANSLATIONS[currentLang].chatbot_responses || TRANSLATIONS.en.chatbot_responses;
+                let response = responses.default;
+                if (lowerInput.includes('hello') || lowerInput.includes('hi')) response = responses.hello;
+                else if (lowerInput.includes('diet') || lowerInput.includes('food')) response = responses.diet;
+                else if (lowerInput.includes('protein')) response = responses.protein;
+                else if (lowerInput.includes('endurance') || lowerInput.includes('stamina')) response = responses.endurance;
+                else if (lowerInput.includes('strength') || lowerInput.includes('muscle')) response = responses.strength;
+                else if (lowerInput.includes('warm up') || lowerInput.includes('stretch')) response = responses['warm-up'];
+                setTimeout(() => addChatMessage('bot', response), 500);
+            }
+            
+             // Leaderboard
+            function renderLeaderboard(containerId, data, scoreSuffix = 'pts') {
+                const container = document.getElementById(containerId);
+                container.innerHTML = '';
+                const header = document.createElement('li');
+                header.className = 'flex justify-between items-center font-bold text-gray-500 pb-2 border-b';
+                header.innerHTML = `
+                    <div class="w-1/4" data-translate-key="rank">Rank</div>
+                    <div class="w-1/2" data-translate-key="user">User</div>
+                    <div class="w-1/4 text-right" data-translate-key="score">Score</div>
+                `;
+                container.appendChild(header);
+
+                data.forEach((user, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'flex justify-between items-center py-3 border-b';
+                    li.innerHTML = `
+                        <div class="w-1/4 font-bold text-lg">${index + 1}</div>
+                        <div class="w-1/2">${user.name}</div>
+                        <div class="w-1/4 text-right font-semibold text-blue-600">${user.score.toLocaleString()} ${scoreSuffix}</div>
+                    `;
+                    container.appendChild(li);
+                });
+            }
+            
+            // AI Posture Check (Live Camera)
+            const startAnalysisBtn = document.getElementById('start-analysis-btn');
+            const liveCameraFeed = document.getElementById('live-camera-feed');
+            const cameraPlaceholder = document.getElementById('camera-placeholder');
+            const aiResults = document.getElementById('ai-results');
+            const aiFeedback = document.getElementById('ai-feedback');
+
+            startAnalysisBtn.addEventListener('click', () => {
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                    cameraStream = null;
+                    liveCameraFeed.classList.add('hidden');
+                    cameraPlaceholder.classList.remove('hidden');
+                    startAnalysisBtn.disabled = false;
+                    return;
+                }
+
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(stream => {
+                            cameraStream = stream;
+                            liveCameraFeed.srcObject = stream;
+                            liveCameraFeed.classList.remove('hidden');
+                            cameraPlaceholder.classList.add('hidden');
+                            aiResults.classList.add('hidden');
+                            startAnalysisBtn.disabled = true;
+
+                            setTimeout(() => {
+                                showLoader(true, 'Analyzing your posture...');
+                                
+                                setTimeout(() => {
+                                    aiFeedback.innerHTML = `
+                                        <div class="flex items-start gap-4">
+                                            <i class="fas fa-check-circle text-green-500 text-2xl mt-1"></i>
+                                            <div>${getTranslation('ai_positive_feedback')}</div>
+                                        </div>
+                                        <div class="flex items-start gap-4">
+                                            <i class="fas fa-exclamation-triangle text-yellow-500 text-2xl mt-1"></i>
+                                            <div>${getTranslation('ai_improvement_feedback')}</div>
+                                        </div>
+                                    `;
+                                    aiResults.classList.remove('hidden');
+                                    showLoader(false);
+
+                                    if (cameraStream) {
+                                        cameraStream.getTracks().forEach(track => track.stop());
+                                        cameraStream = null;
+                                    }
+                                    liveCameraFeed.classList.add('hidden');
+                                    cameraPlaceholder.classList.remove('hidden');
+                                    startAnalysisBtn.disabled = false;
+
+                                }, 2500);
+                            }, 1000);
+                        })
+                        .catch(err => {
+                            console.error("Camera access error:", err);
+                            showNotification("Could not access the camera. Please check permissions.", "error");
+                        });
+                } else {
+                    showNotification("Your browser does not support camera access.", "error");
+                }
+            });
+
+            // --- INITIALIZATION ---
+            document.getElementById('connect-expert-btn').addEventListener('click', () => {
+                showNotification(getTranslation('coming_soon'), 'success');
+            });
+            languageSelect.addEventListener('change', (e) => updateLanguage(e.target.value));
+            document.getElementById('footer-year').textContent = new Date().getFullYear();
+            document.getElementById('streak-count').textContent = streakCount;
+            updateLanguage('en'); 
+        });
+    </script>
+</body>
+</html>
